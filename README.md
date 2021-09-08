@@ -1,2 +1,2 @@
 # R_Auth_Scan
-Redis 未授权登录扫描
+基于 zoomeye(钟馗之眼) 扫描 redis 未授权和弱密码扫描 脚本
