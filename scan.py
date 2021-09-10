@@ -11,6 +11,28 @@ import threading
 import requests
 import redis
 
+yellow = '\033[01;33m'
+white = '\033[01;37m'
+green = '\033[01;32m'
+blue = '\033[01;34m'
+red = '\033[1;31m'
+end = '\033[0m'
+
+version = 'v0.1'
+message = white + '{' + red + version + ' #dev' + white + '}'
+
+redis_scan_banner = f"""
+{yellow} RedisAuthScan is a tool to Scan for unauthorized {yellow}
+_____          _ _                   _   _      _____                 
+|  __ \        | (_)       /\        | | | |    / ____|                {message}{green}
+| |__) |___  __| |_ ___   /  \  _   _| |_| |__ | (___   ___ __ _ _ __  {blue}
+|  _  // _ \/ _` | / __| / /\ \| | | | __| '_ \ \___ \ / __/ _` | '_ \ {blue}
+| | \ \  __/ (_| | \__ \/ ____ \ |_| | |_| | | |____) | (_| (_| | | | |{green}
+|_|  \_\___|\__,_|_|___/_/    \_\__,_|\__|_| |_|_____/ \___\__,_|_| |_|{white}
+                                                    
+{red}RedisAuthScan is under development, please update before each use!{end}
+"""
+
 class Crawl_thread(threading.Thread):
     '''
        抓取线程类，注意需要继承线程类Thread
@@ -131,4 +153,5 @@ def main():
     output.close()    
 
 if __name__ == '__main__':
+    print(redis_scan_banner)
     main()    
