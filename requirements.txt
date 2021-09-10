@@ -1,0 +1,3 @@
+zoomeye==2.0.4.6.10
+redis==3.5.3
+requests==2.23.0

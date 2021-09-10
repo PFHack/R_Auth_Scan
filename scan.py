@@ -28,7 +28,7 @@ _____          _ _                   _   _      _____
 | |__) |___  __| |_ ___   /  \  _   _| |_| |__ | (___   ___ __ _ _ __  {blue}
 |  _  // _ \/ _` | / __| / /\ \| | | | __| '_ \ \___ \ / __/ _` | '_ \ {blue}
 | | \ \  __/ (_| | \__ \/ ____ \ |_| | |_| | | |____) | (_| (_| | | | |{green}
-|_|  \_\___|\__,_|_|___/_/    \_\__,_|\__|_| |_|_____/ \___\__,_|_| |_|{white}
+|_|  \_\___|\__,_|_|___/_/    \_\__,_|\__|_| |_|_____/ \___\__,_|_| |_|{white}PFinal南丞{white}
                                                     
 {red}RedisAuthScan is under development, please update before each use!{end}
 """
@@ -112,7 +112,7 @@ flag = False
 def main():
     output = open('scan.txt', 'a', encoding='utf-8')  # 将结果保存到一个json文件中
     pageQueue = Queue(50)  # 任务队列，存放网页的队列
-    for page in range(1, 20):
+    for page in range(1, 2):
         pageQueue.put(page)  # 构造任务队列
 
     # 初始化采集线程
