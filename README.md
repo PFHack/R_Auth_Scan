@@ -4,11 +4,7 @@
 ## 配置
 
 zoomeye 配置
-```
-        zm = ZoomEye()
-        zm.username = ''  # zoomeye 用户名
-        zm.password = ''  # zoomeye 密码
-```
+``` ```
 弱密码:
 
 ```
